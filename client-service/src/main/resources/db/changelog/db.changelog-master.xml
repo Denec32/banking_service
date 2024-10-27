@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!--<changeSet id="1" author="Denec">
+        <createSequence incrementBy="1" sequenceName="transaction_seq" startValue="1"/>
+        <createSequence incrementBy="1" sequenceName="account_seq" startValue="1"/>
+        <createSequence incrementBy="1" sequenceName="client_seq" startValue="1"/>
+    </changeSet>-->
+    <changeSet id="1" author="denec">
+        <createTable tableName="account">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_account"/>
+            </column>
+            <column name="balance" type="DECIMAL"/>
+            <column name="account_type" type="VARCHAR(20)"/>
+            <column name="client_id" type="BIGINT"/>
+            <column name="is_blocked" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="denec">
+        <createTable tableName="client">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_client"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="middle_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="Denec">
+        <createTable tableName="transaction">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_transaction"/>
+            </column>
+            <column name="amount" type="DECIMAL(19, 2)"/>
+            <column name="client_id" type="BIGINT"/>
+            <column name="account_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
