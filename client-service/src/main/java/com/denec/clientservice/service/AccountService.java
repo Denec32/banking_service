@@ -33,4 +33,9 @@ public class AccountService {
         account.setIsBlocked(true);
         return accountMapper.toDto(accountRepository.save(account));
     }
+
+    public AccountDto findById(Long id) {
+        Account account = accountRepository.findById(id).orElseThrow();
+        return accountMapper.toDto(account);
+    }
 }
