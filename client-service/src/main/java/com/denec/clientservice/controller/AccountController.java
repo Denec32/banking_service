@@ -35,6 +35,6 @@ public class AccountController {
 
     @PutMapping("/{id}/unblock")
     public AccountDto unblockAccount(@PathVariable Long id) {
-        return accountService.blockDebitAccount(id);
+        return accountService.unblockAccount(id);
     }
 }

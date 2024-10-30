@@ -10,6 +10,8 @@ import com.denec.clientservice.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class AccountService {
@@ -37,5 +39,22 @@ public class AccountService {
     public AccountDto findById(Long id) {
         Account account = accountRepository.findById(id).orElseThrow();
         return accountMapper.toDto(account);
+    }
+
+    public AccountDto unblockAccount(Long id) {
+        Account account = accountRepository.findById(id).orElseThrow();
+        if (!account.getIsBlocked()) return accountMapper.toDto(account);
+
+        if (account.getAccountType() == AccountType.DEBIT) {
+            account.setIsBlocked(false);
+            return accountMapper.toDto(accountRepository.save(account));
+        }
+
+        if (account.getBalance().compareTo(BigDecimal.ONE) < 0) {
+            throw new RuntimeException("can't unblock credit account: insufficient balance");
+        }
+
+        account.setIsBlocked(false);
+        return accountMapper.toDto(accountRepository.save(account));
     }
 }
