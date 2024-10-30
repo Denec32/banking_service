@@ -1,5 +1,6 @@
 package com.denec.clientservice.service;
 
+import com.denec.clientservice.Kafka.KafkaTransactionErrorProducer;
 import com.denec.clientservice.mapper.TransactionMapper;
 import com.denec.clientservice.model.Transaction;
 import com.denec.clientservice.model.request.TransactionCreationRequest;
@@ -14,14 +15,15 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final TransactionMapper transactionMapper;
+    private final KafkaTransactionErrorProducer kafkaTransactionErrorProducer;
 
     @Transactional
     public void addTransaction(TransactionCreationRequest request) {
-        if (accountService.findById(request.getAccountId()).getIsBlocked()) {
-            throw new RuntimeException("Account is blocked");
-        }
-
         Transaction transaction = transactionMapper.toEntity(request);
-        transactionMapper.toDto(transactionRepository.save(transaction));
+        if (!accountService.findById(request.getAccountId()).getIsBlocked()) {
+            kafkaTransactionErrorProducer.sendMessage(transactionMapper.toDto(transaction));
+        } else {
+            transactionMapper.toDto(transactionRepository.save(transaction));
+        }
     }
 }
