@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class TransactionService {
     private final KafkaTransactionProducer kafkaTransactionProducer;
 
-    public void addTransaction(TransactionCreateRequest request) {
+    public void createTransaction(TransactionCreateRequest request) {
         kafkaTransactionProducer.sendMessage(request);
     }
 }

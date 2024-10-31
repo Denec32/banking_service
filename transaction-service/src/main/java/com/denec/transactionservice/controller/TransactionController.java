@@ -15,7 +15,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping()
-    void addTransaction(@RequestBody TransactionCreateRequest request) {
-        transactionService.addTransaction(request);
+    void createTransaction(@RequestBody TransactionCreateRequest request) {
+        transactionService.createTransaction(request);
     }
 }
