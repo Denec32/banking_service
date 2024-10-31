@@ -21,7 +21,7 @@ public class KafkaTransactionConsumer {
             containerFactory = "transactionKafkaListenerContainerFactory")
     public void listen(@Payload List<TransactionCreationRequest> messages, Acknowledgment ack) {
         try {
-            messages.forEach(transactionService::addTransaction);
+            messages.forEach(transactionService::createTransaction);
         } catch (Exception e) {
             log.error("Transaction consumer: ошибка записи: {}", e.getMessage());
         } finally {

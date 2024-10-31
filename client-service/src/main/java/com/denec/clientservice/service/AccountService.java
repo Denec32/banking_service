@@ -50,11 +50,17 @@ public class AccountService {
             return accountMapper.toDto(accountRepository.save(account));
         }
 
-        if (account.getBalance().compareTo(BigDecimal.ONE) < 0) {
+        if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
             throw new RuntimeException("can't unblock credit account: insufficient balance");
         }
 
         account.setIsBlocked(false);
         return accountMapper.toDto(accountRepository.save(account));
+    }
+
+    public void updateBalance(Long id, BigDecimal balance) {
+        Account account = accountRepository.findById(id).orElseThrow();
+        account.setBalance(balance);
+        accountRepository.save(account);
     }
 }

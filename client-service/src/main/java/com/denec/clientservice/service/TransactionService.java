@@ -2,7 +2,9 @@ package com.denec.clientservice.service;
 
 import com.denec.clientservice.Kafka.KafkaTransactionErrorProducer;
 import com.denec.clientservice.mapper.TransactionMapper;
+import com.denec.clientservice.model.Account;
 import com.denec.clientservice.model.Transaction;
+import com.denec.clientservice.model.dto.AccountDto;
 import com.denec.clientservice.model.request.TransactionCreationRequest;
 import com.denec.clientservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +20,15 @@ public class TransactionService {
     private final KafkaTransactionErrorProducer kafkaTransactionErrorProducer;
 
     @Transactional
-    public void addTransaction(TransactionCreationRequest request) {
+    public void createTransaction(TransactionCreationRequest request) {
         Transaction transaction = transactionMapper.toEntity(request);
-        if (!accountService.findById(request.getAccountId()).getIsBlocked()) {
+        AccountDto account = accountService.findById(request.getAccountId());
+
+        if (account.getIsBlocked()) {
             kafkaTransactionErrorProducer.sendMessage(transactionMapper.toDto(transaction));
         } else {
+            accountService.updateBalance(account.getId(), account.getBalance().add(request.getAmount()));
+
             transactionMapper.toDto(transactionRepository.save(transaction));
         }
     }
