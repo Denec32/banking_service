@@ -6,6 +6,7 @@ import com.denec.correctionservice.model.Transaction;
 import com.denec.correctionservice.model.TransactionError;
 import com.denec.correctionservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -21,17 +22,18 @@ public class TransactionService {
     public void addTransaction(TransactionError transactionError) {
         RestClient restClient = RestClient.create();
 
-        boolean isAccountUnblocked = Boolean.TRUE.equals(restClient.put()
-                .uri("http://localhost:8080/account/{id}/unblock", transactionError.getAccountId())
-                .retrieve()
-                .body(Boolean.class));
-
-        if (isAccountUnblocked) {
-            Transaction transaction = transactionMapper.toEntity(transactionError);
-            kafkaTransactionProducer.sendMessage(transactionMapper.toDto(transaction));
-        } else {
+        try {
+            restClient.put()
+                    .uri("http://localhost:8080/account/{id}/unblock", transactionError.getAccountId())
+                    .retrieve()
+                    .toEntity(String.class);
+        } catch (Exception e) {
             transactionRepository.save(transactionMapper.toEntity(transactionError));
+            throw e;
         }
+
+        Transaction transaction = transactionMapper.toEntity(transactionError);
+        kafkaTransactionProducer.sendMessage(transactionMapper.toDto(transaction));
     }
 
     public void resendTransactions() {
@@ -39,7 +41,7 @@ public class TransactionService {
 
         for (Transaction transaction : transactions) {
             kafkaTransactionProducer.sendMessage(transactionMapper.toDto(transaction));
-            //transactionRepository.delete(transaction);
+            transactionRepository.delete(transaction);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.denec.clientservice.service;
 
+import com.denec.clientservice.exceptions.UnblockDeniedException;
 import com.denec.clientservice.mapper.AccountMapper;
 import com.denec.clientservice.model.Account;
 import com.denec.clientservice.model.AccountType;
@@ -30,7 +31,7 @@ public class AccountService {
 
     public AccountDto blockDebitAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow();
-        if (account.getAccountType() == AccountType.CREDIT) throw new RuntimeException("can't block credit account");
+        if (account.getAccountType() == AccountType.CREDIT) throw new UnblockDeniedException("can't block credit account");
 
         account.setIsBlocked(true);
         return accountMapper.toDto(accountRepository.save(account));
@@ -51,7 +52,7 @@ public class AccountService {
         }
 
         if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("can't unblock credit account: insufficient balance");
+            throw new UnblockDeniedException("can't unblock credit account: insufficient balance");
         }
 
         account.setIsBlocked(false);

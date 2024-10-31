@@ -1,10 +1,14 @@
 package com.denec.clientservice.controller;
 
+import com.denec.clientservice.exceptions.UnblockDeniedException;
 import com.denec.clientservice.model.dto.AccountDto;
 import com.denec.clientservice.model.request.CreditAccountRegisterRequest;
 import com.denec.clientservice.model.request.DebitAccountRegisterRequest;
 import com.denec.clientservice.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,5 +40,10 @@ public class AccountController {
     @PutMapping("/{id}/unblock")
     public AccountDto unblockAccount(@PathVariable Long id) {
         return accountService.unblockAccount(id);
+    }
+
+    @ExceptionHandler(UnblockDeniedException.class)
+    public ResponseEntity<?> handleUnblockDeniedException(UnblockDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
     }
 }
