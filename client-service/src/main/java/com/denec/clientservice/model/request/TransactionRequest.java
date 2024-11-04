@@ -9,8 +9,10 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionCreationRequest {
+public class TransactionRequest {
+    private Long cancelTransactionId;
     private BigDecimal amount;
     private Long clientId;
     private Long accountId;
+    private TransactionType type;
 }

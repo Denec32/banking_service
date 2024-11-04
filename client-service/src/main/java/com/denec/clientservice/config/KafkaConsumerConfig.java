@@ -1,6 +1,6 @@
 package com.denec.clientservice.config;
 
-import com.denec.clientservice.model.request.TransactionCreationRequest;
+import com.denec.clientservice.model.request.TransactionRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -31,20 +31,20 @@ public class KafkaConsumerConfig {
     private String kafkaGroupId;
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, TransactionCreationRequest> transactionKafkaListenerContainerFactory(
-            @Qualifier("transactionConsumerFactory") ConsumerFactory<String, TransactionCreationRequest> consumerFactory
+    ConcurrentKafkaListenerContainerFactory<String, TransactionRequest> transactionKafkaListenerContainerFactory(
+            @Qualifier("transactionConsumerFactory") ConsumerFactory<String, TransactionRequest> consumerFactory
     ) {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, TransactionCreationRequest>();
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, TransactionRequest>();
         factoryBuilder(consumerFactory, factory);
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, TransactionCreationRequest> transactionConsumerFactory() {
+    public ConsumerFactory<String, TransactionRequest> transactionConsumerFactory() {
         Map<String, Object> props = consumerConfigs();
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.denec.clientservice.model.request.TransactionCreationRequest");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.denec.clientservice.model.request.TransactionRequest");
 
-        DefaultKafkaConsumerFactory<String, TransactionCreationRequest> factory = new DefaultKafkaConsumerFactory<>(props);
+        DefaultKafkaConsumerFactory<String, TransactionRequest> factory = new DefaultKafkaConsumerFactory<>(props);
         factory.setKeyDeserializer(new StringDeserializer());
 
         return factory;
