@@ -1,7 +1,7 @@
 package com.denec.transactionservice.config;
 
 import com.denec.transactionservice.kafka.KafkaTransactionProducer;
-import com.denec.transactionservice.model.TransactionCreateRequest;
+import com.denec.transactionservice.model.Transaction;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,7 @@ public class KafkaProducerConfig {
     @ConditionalOnProperty(value = "kafka.producer.enable", havingValue = "true", matchIfMissing = true)
     public KafkaTransactionProducer kafkaTransactionProducer() {
         Map<String, Object> props = producerConfigs();
-        var producerFactory = new DefaultKafkaProducerFactory<String, TransactionCreateRequest>(props);
+        var producerFactory = new DefaultKafkaProducerFactory<String, Transaction>(props);
         var template = new KafkaTemplate<>(producerFactory);
         template.setDefaultTopic(transactionTopic);
 

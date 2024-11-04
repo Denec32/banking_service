@@ -1,5 +1,6 @@
 package com.denec.transactionservice.controller;
 
+import com.denec.transactionservice.model.TransactionCancelRequest;
 import com.denec.transactionservice.model.TransactionCreateRequest;
 import com.denec.transactionservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/transaction/")
+@RequestMapping("/transaction")
 @RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping()
+    @PostMapping("/create")
     void createTransaction(@RequestBody TransactionCreateRequest request) {
         transactionService.createTransaction(request);
+    }
+
+    @PostMapping("/cancel")
+    void cancelTransaction(@RequestBody TransactionCancelRequest request) {
+        transactionService.cancelTransaction(request);
     }
 }
