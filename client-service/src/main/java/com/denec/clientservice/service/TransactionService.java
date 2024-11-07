@@ -7,6 +7,7 @@ import com.denec.clientservice.model.dto.AccountDto;
 import com.denec.clientservice.model.request.TransactionCancelRequest;
 import com.denec.clientservice.model.request.TransactionCreateRequest;
 import com.denec.clientservice.repository.TransactionRepository;
+import com.denec.clientservice.web.TransactionCheckWebClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +19,18 @@ public class TransactionService {
     private final AccountService accountService;
     private final TransactionMapper transactionMapper;
     private final KafkaTransactionErrorProducer kafkaTransactionErrorProducer;
+    private final TransactionCheckWebClient transactionCheckWebClient;
 
     @Transactional
     public void createTransaction(TransactionCreateRequest request) {
         Transaction transaction = transactionMapper.toEntity(request);
         AccountDto account = accountService.findById(request.getAccountId());
 
-        if (account.getIsBlocked()) {
-            kafkaTransactionErrorProducer.sendMessage(transactionMapper.toDto(transaction));
-        } else {
+        if (transactionCheckWebClient.check(account.getId()).orElseThrow().getIsAllowed()/*!account.getIsBlocked()*/) {
             accountService.updateBalance(account.getId(), account.getBalance().add(request.getAmount()));
-
             transactionMapper.toDto(transactionRepository.save(transaction));
+        } else {
+            kafkaTransactionErrorProducer.sendMessage(transactionMapper.toDto(transaction));
         }
     }
 
