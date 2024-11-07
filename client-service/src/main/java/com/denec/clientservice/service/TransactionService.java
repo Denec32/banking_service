@@ -26,11 +26,12 @@ public class TransactionService {
         Transaction transaction = transactionMapper.toEntity(request);
         AccountDto account = accountService.findById(request.getAccountId());
 
-        if (transactionCheckWebClient.check(account.getId()).orElseThrow().getIsAllowed()/*!account.getIsBlocked()*/) {
+        if (transactionCheckWebClient.check(account.getId()).orElseThrow().getIsAllowed()) {
             accountService.updateBalance(account.getId(), account.getBalance().add(request.getAmount()));
-            transactionMapper.toDto(transactionRepository.save(transaction));
+            transactionRepository.save(transaction);
         } else {
             kafkaTransactionErrorProducer.sendMessage(transactionMapper.toDto(transaction));
+            throw new RuntimeException("Could not create transaction: account is blocked");
         }
     }
 
