@@ -24,7 +24,7 @@ public class AuthenticationService {
             throw new RuntimeException("Passwords do not match");
         }
 
-        var user = new  User();
+        var user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 

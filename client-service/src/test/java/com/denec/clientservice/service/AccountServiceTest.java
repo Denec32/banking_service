@@ -103,7 +103,7 @@ class AccountServiceTest {
         var accountService = setUpAccountService(blockedNegativeCreditAccount);
 
         assertThatExceptionOfType(UnblockDeniedException.class).isThrownBy(
-                () -> setUpAccountService(blockedNegativeCreditAccount).unblockAccount(blockedNegativeCreditAccount.getId())
+                () -> accountService.unblockAccount(blockedNegativeCreditAccount.getId())
         );
     }
 }
