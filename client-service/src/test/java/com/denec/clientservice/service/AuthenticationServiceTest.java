@@ -1,18 +1,13 @@
 package com.denec.clientservice.service;
 
-import com.denec.clientservice.model.User;
 import com.denec.clientservice.model.request.RegisterUserRequest;
 import com.denec.clientservice.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class AuthenticationServiceTest {
     private static AuthenticationService setUpAuthenticationService() {
